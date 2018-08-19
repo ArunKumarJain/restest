@@ -162,9 +162,9 @@ class Restest():
                     logging.error("Error from exception part Response: \"{0}\" Status Code: \"{1}\" Reason: \"{2}\" Elapsed time: \"{3}\"".
                                  format(response.text.encode('utf-8'), response.status_code, response.reason, response.elapsed.total_seconds()))
 
-                # csvLogger.debug('"{method}","{url}","{code}","{elapsedTime}"'.format(method = method, url = url,
-                #                                                                      code = response.status_code,
-                #                                                                      elapsedTime = response.elapsed.total_seconds()))
+                csvLogger.debug('"{method}","{url}","{code}","{elapsedTime}"'.format(method = method, url = url,
+                                                                                     code = response.status_code,
+                                                                                     elapsedTime = response.elapsed.total_seconds()))
                 raise Exception(traceback.format_exc())
 
             logging.error(str(e))
@@ -178,9 +178,9 @@ class Restest():
                 logging.debug("Response: \"{0}\" Status Code: \"{1}\" Reason: \"{2}\" Elapsed time: \"{3}\"".
                              format(response.text.encode('utf-8'), response.status_code, response.reason, response.elapsed.total_seconds()))
 
-        # csvLogger.debug('"{method}","{url}","{code}","{elapsedTime}"'.format(method = method, url = url,
-        #                                                                      code = response.status_code,
-        #                                                                      elapsedTime = response.elapsed.total_seconds()))
+        csvLogger.debug('"{method}","{url}","{code}","{elapsedTime}"'.format(method = method, url = url,
+                                                                             code = response.status_code,
+                                                                             elapsedTime = response.elapsed.total_seconds()))
         if expectedOutput:
             self.__assertResponse(response = response, expectedResponse = expectedOutput, filename = filename)
 
@@ -338,9 +338,9 @@ class Restest():
                 else:
                     raise Exception("Comparator: \"{0}\" not supported for elapsed time".format(itemDict.get("comparator")))
 
-                errorLevel = itemDict.get('errorLevel', 'warning')
+                errorLevel = itemDict.get('errorLevel', 'error')
                 if elapsedTimeError and errorLevel.lower() == 'error':
-                    raise elapsedTimeError
+                    raise AssertionError(elapsedTimeError)
                 elif elapsedTimeError:
                     self.hasWarnings = True
                     logging.warning(elapsedTimeError)
@@ -355,7 +355,7 @@ class Restest():
                     raise Exception("Comparator: \"{0}\" not supported for file".format(itemDict.get("comparator")))
             if itemDict.get("validator") == "schema":
                 schema = itemDict.get("json")
-                errorLevel = itemDict.get('errorLevel', 'warning')
+                errorLevel = itemDict.get('errorLevel', 'error')
                 if isinstance(schema, BaseString) and os.path.isfile(schema):
                     schema = open(schema).read()
                 try:
